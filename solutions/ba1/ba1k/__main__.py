@@ -1,12 +1,14 @@
+from bio.strings import computing_frequencies
 from bio.utils import read_inputs
+
+schema = [("text", str), ("k", int)]
 
 
 def main() -> None:
-    schema = [("pattern", str), ("text", str), ("d", int)]
     args = read_inputs(schema)
 
     # run algorithm
-    print(args)
+    print(*computing_frequencies(**args))
 
 
 if __name__ == "__main__":

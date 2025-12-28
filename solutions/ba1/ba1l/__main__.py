@@ -1,12 +1,14 @@
+from bio.strings import pattern_to_number
 from bio.utils import read_inputs
+
+schema = [("pattern", str)]
 
 
 def main() -> None:
-    schema = [("pattern", str), ("text", str), ("d", int)]
     args = read_inputs(schema)
 
     # run algorithm
-    print(args)
+    print(pattern_to_number(**args))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,10 @@
 from collections import defaultdict
+from itertools import combinations, product
+from typing import Iterable, Literal
 
 import numpy as np
+
+NucleicAcids = Literal["A", "C", "G", "T"]
 
 
 def most_frequent_kmers(text: str, k: int) -> list[str]:
@@ -92,3 +96,79 @@ def find_all_approx_occurences(pattern: str, text: str, d: int = 0) -> list[int]
             occurences.append(i)
 
     return occurences
+
+
+def build_mismatched_kmer(
+    kmer: str, idx: Iterable[int], mismatches: Iterable[str]
+) -> str:
+    neighbor = list(kmer)
+    for i, m in zip(idx, mismatches):
+        neighbor[i] = m
+    return "".join(neighbor)
+
+
+def find_neighbors(kmer: str, d: int) -> set[str]:
+    k = len(kmer)
+    neighbors = set()
+    for idx in combinations(range(k), d):
+        for mismatches in product(*["ACTG" for _ in range(d)]):
+            neighbors.add(build_mismatched_kmer(kmer, idx, mismatches))
+
+    return neighbors
+
+
+def approx_kmers_frequency(text: str, k: int, d: int) -> dict[str, int]:
+    neighbor_freq = defaultdict(int)
+    for i in range(len(text) - k + 1):
+        for neighbor in find_neighbors(text[i : i + k], d):
+            neighbor_freq[neighbor] += 1
+
+    return neighbor_freq
+
+
+def most_frequent_approx_kmers(
+    text: str, k: int, d: int, incl_reverse: bool = False
+) -> set[str]:
+    neighbor_freq = approx_kmers_frequency(text, k, d)
+
+    if incl_reverse:
+        nf2 = {}
+        for kmer in neighbor_freq:
+            rc = reverse_complement(kmer)
+            nf2[kmer] = neighbor_freq[kmer]
+            if rc in neighbor_freq:
+                nf2[kmer] += neighbor_freq[rc]
+
+        neighbor_freq = nf2
+
+    max_freq = max(neighbor_freq.values())
+    return set(kmer for kmer, freq in neighbor_freq.items() if freq == max_freq)
+
+
+NUC2INT = {"A": 0, "C": 1, "G": 2, "T": 3}
+INT2NUC = {v: k for k, v in NUC2INT.items()}
+
+
+def pattern_to_number(pattern: str) -> int:
+    """ba1k"""
+    return sum(4**i * NUC2INT[c] for i, c in enumerate(list(pattern)[::-1]))
+
+
+def computing_frequencies(text: str, k: int) -> np.ndarray:
+    """ba1k"""
+    freqs = np.zeros((4**k), dtype=np.int64)
+
+    for i in range(len(text) - k + 1):
+        freqs[pattern_to_number(text[i : i + k])] += 1
+
+    return freqs
+
+
+def number_to_pattern(idx: int, k: int) -> str:
+    n = idx
+    pattern = []
+    for i in range(k):
+        pattern.append(INT2NUC[n % 4])
+        n = n // 4
+
+    return "".join(pattern[::-1])
