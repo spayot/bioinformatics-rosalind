@@ -1,0 +1,21 @@
+import sys
+from typing import Any
+
+
+CONVERSION = {"s": str, "i": int, "f": float, "b": bool}
+
+
+def read_inputs(
+    schema: list[tuple[str, type]],
+) -> dict[str, Any]:
+    """reads the arguments entered in a filepath provided through CLI (sys.argv[1]) and split them into a list of strings.
+    Optionally, if a `schema` is provided, it converts argument to expected type
+
+    """
+    with open(sys.argv[1]) as f:
+        args: list[str] = f.read().strip().split()
+    converted_values = {}
+    for (field_name, field_type), value in zip(schema, args):
+        converted_values[field_name] = field_type(value)
+
+    return converted_values

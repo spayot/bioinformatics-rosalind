@@ -1,0 +1,30 @@
+[project]
+name = "rosalind_sp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.3.1",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.0",
+    "pyperclip>=1.11.0",
+    "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"bio.templates" = ["*"]
+
+[project.scripts]
+bio = "bio.cli:main"  
