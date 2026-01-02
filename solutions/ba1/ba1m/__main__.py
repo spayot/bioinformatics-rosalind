@@ -3,7 +3,7 @@ from bio.utils import read_inputs
 
 
 def main() -> None:
-    schema = [("idx", int), ("k", int)]
+    schema = [("kmer", int), ("d", int)]
     args = read_inputs(schema)
 
     # run algorithm

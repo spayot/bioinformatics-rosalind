@@ -7,7 +7,7 @@ from bio.cli.scraper import RosalindScraper
 from bio.cli.state import set_current
 
 
-TEMPLATE_DIR = Path(__file__).parent / "templates"
+TEMPLATE_DIR = Path(__file__).parent.parent.parent / "templates"
 
 
 @click.command()
@@ -19,6 +19,7 @@ def create(problem):
 
     # 1. Copy the __main__.py template
     source_main = TEMPLATE_DIR / "main_template.py"
+    print(source_main, source_main.exists())
     if source_main.exists():
         shutil.copy(source_main, target_path / "__main__.py")
 

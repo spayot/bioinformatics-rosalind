@@ -2,8 +2,10 @@ import os
 from pathlib import Path
 import click
 import requests
-
+from dotenv import load_dotenv
 from bio.cli.state import get_current
+
+load_dotenv()
 
 
 @click.command()

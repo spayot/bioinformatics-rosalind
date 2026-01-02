@@ -107,12 +107,12 @@ def build_mismatched_kmer(
     return "".join(neighbor)
 
 
-def find_neighbors(kmer: str, d: int) -> set[str]:
-    k = len(kmer)
+def find_neighbors(pattern: str, d: int) -> set[str]:
+    k = len(pattern)
     neighbors = set()
     for idx in combinations(range(k), d):
         for mismatches in product(*["ACTG" for _ in range(d)]):
-            neighbors.add(build_mismatched_kmer(kmer, idx, mismatches))
+            neighbors.add(build_mismatched_kmer(pattern, idx, mismatches))
 
     return neighbors
 
@@ -172,3 +172,31 @@ def number_to_pattern(idx: int, k: int) -> str:
         n = n // 4
 
     return "".join(pattern[::-1])
+
+
+def neighbors_v2(pattern: str, d: int) -> set[str]:
+    if d == 0:
+        return {pattern}
+    if len(pattern) == 1:
+        return {"A", "C", "G", "T"}
+    neighborhood = set()
+
+    suffix_neighbors = neighbors_v2(pattern[1:], d)
+    for sn in suffix_neighbors:
+        if hamming_distance(pattern[1:], sn) < d:
+            for n in "ACGT":
+                neighborhood.add(n + sn)
+        else:
+            neighborhood.add(pattern[0] + sn)
+
+    return neighborhood
+
+
+def motif_enumeration(Dna: list[str], k: int, d: int) -> set[str]:
+    patterns = set()
+    for i in range(len(Dna[0]) - k + 1):
+        pattern = Dna[0][i : i + k]
+        for neighbor in find_neighbors(pattern, d):
+            if all(find_all_approx_occurences(neighbor, dna, d) for dna in Dna[1:]):
+                patterns.add(neighbor)
+    return patterns
