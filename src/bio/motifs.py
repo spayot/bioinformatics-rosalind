@@ -1,4 +1,7 @@
+from math import prod
+import numpy as np
 from bio.strings import (
+    NUC2INT,
     find_all_approx_occurences,
     find_neighbors,
     hamming_distance,
@@ -47,3 +50,19 @@ def median_string(Dna: list[str], k: int) -> str:
             min_d = td
             median = pattern
     return median
+
+
+def profile_based_probability(kmer: str, profile: np.ndarray) -> float:
+    return prod(profile[NUC2INT[c], i] for i, c in enumerate(kmer))
+
+
+def most_probable_kmer_from_profile(text: str, k: int, profile: np.ndarray) -> str:
+    max_proba = 0
+    most_probable_kmer = ""
+    for i in range(len(text) - k + 1):
+        kmer = text[i : i + k]
+        kmer_proba = profile_based_probability(kmer, profile)
+        if kmer_proba > max_proba:
+            most_probable_kmer = kmer
+            max_proba = kmer_proba
+    return most_probable_kmer

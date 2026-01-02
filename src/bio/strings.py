@@ -5,6 +5,10 @@ from typing import Iterable, Literal
 import numpy as np
 
 NucleicAcids = Literal["A", "C", "G", "T"]
+COMPLEMENTS = {"A": "T", "T": "A", "C": "G", "G": "C"}
+
+NUC2INT = {"A": 0, "C": 1, "G": 2, "T": 3}
+INT2NUC = {v: k for k, v in NUC2INT.items()}
 
 
 def most_frequent_kmers(text: str, k: int) -> list[str]:
@@ -25,9 +29,6 @@ def most_frequent_kmers(text: str, k: int) -> list[str]:
             mfkm.append(kmer)
 
     return mfkm
-
-
-COMPLEMENTS = {"A": "T", "T": "A", "C": "G", "G": "C"}
 
 
 def reverse_complement(pattern: str) -> str:
@@ -143,10 +144,6 @@ def most_frequent_approx_kmers(
 
     max_freq = max(neighbor_freq.values())
     return set(kmer for kmer, freq in neighbor_freq.items() if freq == max_freq)
-
-
-NUC2INT = {"A": 0, "C": 1, "G": 2, "T": 3}
-INT2NUC = {v: k for k, v in NUC2INT.items()}
 
 
 def pattern_to_number(pattern: str) -> int:
