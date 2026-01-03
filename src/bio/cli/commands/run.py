@@ -1,6 +1,6 @@
 from pathlib import Path
 import subprocess
-
+import time
 import click
 import pyperclip
 
@@ -35,12 +35,27 @@ def run(mode, problem):
         return
 
     try:
+        # --- Start Timer ---
+        start_time = time.perf_counter()
         # Capture the output
         result = subprocess.check_output(
             ["python", str(script_path), str(data_file)], text=True
         ).strip()
 
+        # --- End Timer ---
+        end_time = time.perf_counter()
+        elapsed = end_time - start_time
+
         click.echo(f"\n--- Output ---\n{result}\n--------------")
+
+        # Display Metrics
+        # If it's under 1 second, show ms; otherwise show seconds
+        if elapsed < 1:
+            time_str = f"{elapsed * 1000:.2f} ms"
+        else:
+            time_str = f"{elapsed:.3f} s"
+
+        click.secho(f"⏱  Elapsed time: {time_str}", fg="blue")
 
         if mode == "test":
             expected_path = folder_path / "expected.txt"
