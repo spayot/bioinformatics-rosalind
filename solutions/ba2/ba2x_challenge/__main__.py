@@ -4,14 +4,18 @@ from bio.utils import read_inputs
 
 def main() -> None:
     """randomized motif search"""
-    schema = [("k", int), ("t", int), ("Dna", str)]
+    schema = [("Dna", str)]
     args = read_inputs(schema, True)
-
     # print(args)
     # run algorithm
-    best_motifs = run_multiple_times(algorithm=randomized_motif_search, n=1000, **args)
+    best_motifs = run_multiple_times(
+        algorithm=randomized_motif_search, n=1000, k=20, t=10, **args
+    )
 
-    print(*best_motifs.kmers, sep="\n")
+    print(
+        f"consensus: {best_motifs.consensus()}\nscore:     {best_motifs.score}",
+        sep="\n",
+    )
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from math import prod
 import random
+from typing import Callable
 
 import numpy as np
 
@@ -158,12 +159,10 @@ def randomized_motif_search(k: int, t: int, Dna: list[str]) -> Motifs:
             return best_motifs
 
 
-def run_multiple_randomized_motif_search(
-    k: int, t: int, Dna: list[str], n: int = 1000
-) -> Motifs:
+def run_multiple_times(algorithm: Callable, n: int = 1000, **args) -> Motifs:
     best_score = 1e9
     for _ in range(n):
-        motifs = randomized_motif_search(k, t, Dna)
+        motifs = algorithm(**args)
         if motifs.score < best_score:
             best_motifs = deepcopy(motifs)
             best_score = motifs.score
