@@ -6,6 +6,7 @@ import random
 import numpy as np
 
 from bio.strings import (
+    INT2NUC,
     NUC2INT,
     find_all_approx_occurences,
     find_neighbors,
@@ -34,20 +35,20 @@ class Motifs:
         self.t += 1
 
     @property
-    def score(self) -> int:
-        """scores motifs distance to consensus string"""
-        distance_to_consensus = self.t - self.counts.max(axis=0)
-        return int(distance_to_consensus.sum() * self.t)
-
-    # def consensus(self) -> str:
-
-    @property
     def counts(self) -> np.ndarray:
-        cnts = np.zeros((4, self.k))
+        cnts = np.zeros((4, self.k), dtype=np.uint8)
         for motif in self.kmers:
             for i, c in enumerate(motif):
                 cnts[NUC2INT[c], i] += 1
         return cnts
+
+    def consensus(self) -> str:
+        return "".join([INT2NUC[x] for x in self.counts.argmax(axis=0)])
+
+    @property
+    def score(self) -> int:
+        """scores motifs distance to consensus string"""
+        return int((self.t - self.counts.max(axis=0)).sum())
 
     def profile(self, with_pseudocounts: bool = True) -> np.ndarray:
         """creates a frequency-based probability matrix to find each nucleotide (rows) for each position of the k-mer (columns)"""
@@ -117,27 +118,6 @@ def most_probable_kmer_from_profile(text: str, k: int, profile: np.ndarray) -> s
     return most_probable_kmer
 
 
-def build_profile(motifs: list[str], with_pseudocounts: bool = False) -> np.ndarray:
-    """creates a frequency-based probability matrix to find each nucleotide (rows) for each position of the k-mer (columns)"""
-    k = len(motifs[0])
-    t = len(motifs)
-    profile = np.zeros((4, k))
-    for motif in motifs:
-        for i, c in enumerate(motif):
-            profile[NUC2INT[c], i] += 1
-    if with_pseudocounts:
-        # adding 1 count to each nucleic acid to avoid zero probabilities
-        profile += 1
-        t += 4
-    return profile / t
-
-
-def score(motifs: list[str], with_pseudocounts: bool = False) -> int:
-    """scores motifs distance to consensus string"""
-    distance_to_consensus = 1 - build_profile(motifs).max(axis=0)
-    return int(distance_to_consensus.sum() * len(motifs))
-
-
 def greedy_motif_search(
     Dna: list[str], k: int, t: int, with_pseudocounts: bool = False
 ) -> Motifs:
@@ -159,6 +139,7 @@ def greedy_motif_search(
 
 
 def motifs_from_profile(profile: np.ndarray, Dna: list[str]) -> Motifs:
+    """each motif selected from Dna strands maximizes likelihood given profile."""
     k = profile.shape[1]
     return Motifs([most_probable_kmer_from_profile(dna, k, profile) for dna in Dna])
 
