@@ -11,6 +11,14 @@ NUC2INT = {"A": 0, "C": 1, "G": 2, "T": 3}
 INT2NUC = {v: k for k, v in NUC2INT.items()}
 
 
+def pattern_count(text: str, pattern: str) -> int:
+    count = 0
+    k = len(pattern)
+    for i in range(len(text) - k + 1):
+        count += text[i : i + k] == pattern
+    return count
+
+
 def most_frequent_kmers(text: str, k: int) -> list[str]:
     kmers = defaultdict(int)
 

@@ -2,16 +2,14 @@ import os
 import sys
 
 from bio.strings import most_frequent_kmers
+from bio.utils import read_inputs
 
 
 def main() -> None:
-    with open(os.path.join(sys.argv[0], sys.argv[1])) as f:
-        s = f.read()
-    
-    text, k = s.split("\n")[:2]
-    
-    print(" ".join(most_frequent_kmers(text, int(k))))
+    schema = [("text", str), ("k", int)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
+    print(" ".join(most_frequent_kmers(**args)))
 
 
 if __name__ == "__main__":

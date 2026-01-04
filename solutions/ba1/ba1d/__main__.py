@@ -1,13 +1,14 @@
+import sys
 from bio.utils import read_inputs
 
 from bio.strings import find_all_occurences
 
+
 def main() -> None:
-    
-    pattern, text = read_inputs()
+    schema = [("pattern", str), ("text", str)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
-    print(*(str(i) for i in find_all_occurences(pattern, text)))
-
+    print(*(str(i) for i in find_all_occurences(**args)))
 
 
 if __name__ == "__main__":

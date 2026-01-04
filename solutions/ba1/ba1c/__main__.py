@@ -1,15 +1,14 @@
-import os
 import sys
 
 from bio.strings import reverse_complement
+from bio.utils import read_inputs
+
 
 def main() -> None:
-    with open(os.path.join(sys.argv[0], sys.argv[1])) as f:
-        s = f.read()
-    
-    pattern = s.strip()
-    
-    print(reverse_complement(pattern))
+    schema = [("pattern", str)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+
+    print(reverse_complement(**args))
 
 
 if __name__ == "__main__":

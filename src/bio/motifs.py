@@ -23,17 +23,25 @@ class Motifs:
     def __post_init__(self) -> None:
         self.kmers = [kmer.upper() for kmer in self.kmers]
         self.k = len(self.kmers[0])
-        self.t = len(self.kmers)
 
-    def __get_item__(self, idx: int) -> str:
+    def __getitem__(self, idx: int) -> str:
         return self.kmers[idx]
+
+    def __setitem__(self, idx: int, value: str) -> None:
+        self.kmers[idx] = value
 
     def __iter__(self):
         return self.kmers.__iter__()
 
     def append(self, obj: str) -> None:
         self.kmers.append(obj.upper())
-        self.t += 1
+
+    def pop(self, idx: int) -> None:
+        self.kmers.pop(idx)
+
+    @property
+    def t(self) -> int:
+        return len(self.kmers)
 
     @property
     def counts(self) -> np.ndarray:
@@ -51,7 +59,7 @@ class Motifs:
         """scores motifs distance to consensus string"""
         return int((self.t - self.counts.max(axis=0)).sum())
 
-    def profile(self, with_pseudocounts: bool = True) -> np.ndarray:
+    def profile(self, with_pseudocounts: bool = False) -> np.ndarray:
         """creates a frequency-based probability matrix to find each nucleotide (rows) for each position of the k-mer (columns)"""
         if not with_pseudocounts:
             return self.counts / self.t
@@ -145,10 +153,15 @@ def motifs_from_profile(profile: np.ndarray, Dna: list[str]) -> Motifs:
     return Motifs([most_probable_kmer_from_profile(dna, k, profile) for dna in Dna])
 
 
-def randomized_motif_search(k: int, t: int, Dna: list[str]) -> Motifs:
+def random_motif_initialization(k: int, t: int, Dna: list[str]) -> Motifs:
     # random initialization
     starting_indices = [random.randint(0, len(Dna[i]) - k) for i in range(t)]
-    motifs = Motifs([Dna[i][j : j + k] for i, j in enumerate(starting_indices)])
+    return Motifs([Dna[i][j : j + k] for i, j in enumerate(starting_indices)])
+
+
+def randomized_motif_search(k: int, t: int, Dna: list[str]) -> Motifs:
+    # random initialization
+    motifs = random_motif_initialization(k, t, Dna)
     best_motifs = deepcopy(motifs)
 
     while True:
@@ -168,3 +181,40 @@ def run_multiple_times(algorithm: Callable, n: int = 1000, **args) -> Motifs:
             best_score = motifs.score
 
     return best_motifs
+
+
+def masked_counts(motifs: Motifs, idx: int) -> np.ndarray:
+    # calculate profile of motifs if you exclude motif[idx]
+    assert idx < motifs.t, f"{idx=} should be lower than {motifs.t}"
+    masked_count = (motifs.counts - Motifs([motifs[idx]]).counts) + 1
+    return masked_count.astype(np.uint64)
+
+
+def sample_motif_from_masked_counts(dna: str, k: int, masked_count: np.ndarray) -> int:
+    # build proba distribution across kmers of Dna
+
+    kmer_candidates = np.arange(len(dna) - k + 1)
+    weights = np.array(
+        [
+            int(profile_based_probability(dna[c : c + k], masked_count))
+            for c in kmer_candidates
+        ]
+    )
+    weights = weights / weights.sum()  # normalize
+
+    rng = np.random.default_rng()
+    return int(rng.choice(kmer_candidates, p=weights, size=1)[0])
+
+
+def GibbsSampler(k: int, t: int, N: int, Dna: list[str]) -> Motifs:
+    motifs = random_motif_initialization(k, t, Dna)
+    best_motifs = deepcopy(motifs)
+    for _ in range(N):
+        idx = random.choice(range(t))
+        masked_count = masked_counts(motifs, idx)
+        motif_start = sample_motif_from_masked_counts(Dna[idx], k, masked_count)
+        motifs[idx] = Dna[idx][motif_start : motif_start + k]
+        if motifs.score < best_motifs.score:
+            best_motifs = deepcopy(motifs)
+
+    return motifs

@@ -1,3 +1,4 @@
+import sys
 from bio.utils import read_inputs
 from bio.strings import argmins, skew
 from typing import Any
@@ -10,13 +11,11 @@ def parse_string(s: str) -> Any:
 
 
 def main() -> None:
-    args = read_inputs()
-
-    # parse inputs
-    genome = args[0]
+    schema = [("genome", str)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
     # run algorithm
-    sk = skew(genome)
+    sk = skew(**args)
 
     print(*argmins(sk))
     plt.plot(sk)

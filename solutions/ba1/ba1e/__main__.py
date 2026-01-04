@@ -1,18 +1,13 @@
+import sys
 from bio.strings import find_clumps
 from bio.utils import read_inputs
 
 
 def main() -> None:
-    args = read_inputs()
-    
-    # parse inputs
-    genome = args[0]
-    k, L, t = [int(arg) for arg in args[1:]]
+    schema = [("genome", str), ("k", int), ("L", int), ("t", int)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
-    print(*find_clumps(genome, k, L, t))
-
-
-
+    print(*find_clumps(**args))
 
 
 if __name__ == "__main__":

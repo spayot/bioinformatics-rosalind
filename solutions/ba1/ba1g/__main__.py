@@ -1,3 +1,4 @@
+import sys
 from bio.strings import hamming_distance
 from bio.utils import read_inputs
 from typing import Any
@@ -8,14 +9,10 @@ def parse_string(s: str) -> Any:
 
 
 def main() -> None:
-    args = read_inputs()
+    schema = [("s1", str), ("s2", str)]
+    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
-    # parse inputs
-    s1, s2 = args
-
-    # run algorithm
-    print(f"{len(s1)=}")
-    print(f"{hamming_distance(s1, s2)=}")
+    print(hamming_distance(**args))
 
 
 if __name__ == "__main__":
