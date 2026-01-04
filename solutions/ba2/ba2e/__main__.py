@@ -8,6 +8,7 @@ def main() -> None:
     args = read_inputs(schema, True)
 
     # run algorithm
+    # print(*greedy_motif_search(with_pseudocounts=True, **args))
     print(*greedy_motif_search(with_pseudocounts=True, **args))
 
 

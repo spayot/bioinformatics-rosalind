@@ -1,5 +1,8 @@
 from copy import deepcopy
+from dataclasses import dataclass
 from math import prod
+import random
+
 import numpy as np
 
 from bio.strings import (
@@ -9,6 +12,50 @@ from bio.strings import (
     hamming_distance,
     number_to_pattern,
 )
+
+
+@dataclass
+class Motifs:
+    kmers: list[str]
+
+    def __post_init__(self) -> None:
+        self.kmers = [kmer.upper() for kmer in self.kmers]
+        self.k = len(self.kmers[0])
+        self.t = len(self.kmers)
+
+    def __get_item__(self, idx: int) -> str:
+        return self.kmers[idx]
+
+    def __iter__(self):
+        return self.kmers.__iter__()
+
+    def append(self, obj: str) -> None:
+        self.kmers.append(obj.upper())
+        self.t += 1
+
+    @property
+    def score(self) -> int:
+        """scores motifs distance to consensus string"""
+        distance_to_consensus = self.t - self.counts.max(axis=0)
+        return int(distance_to_consensus.sum() * self.t)
+
+    # def consensus(self) -> str:
+
+    @property
+    def counts(self) -> np.ndarray:
+        cnts = np.zeros((4, self.k))
+        for motif in self.kmers:
+            for i, c in enumerate(motif):
+                cnts[NUC2INT[c], i] += 1
+        return cnts
+
+    def profile(self, with_pseudocounts: bool = True) -> np.ndarray:
+        """creates a frequency-based probability matrix to find each nucleotide (rows) for each position of the k-mer (columns)"""
+        if not with_pseudocounts:
+            return self.counts / self.t
+        else:
+            cnts = self.counts + 1
+            return cnts / (self.t + 4)
 
 
 def motif_enumeration(Dna: list[str], k: int, d: int) -> set[str]:
@@ -87,21 +134,57 @@ def build_profile(motifs: list[str], with_pseudocounts: bool = False) -> np.ndar
 
 def score(motifs: list[str], with_pseudocounts: bool = False) -> int:
     """scores motifs distance to consensus string"""
-    distance_to_consensus = 1 - build_profile(motifs, with_pseudocounts).max(axis=0)
+    distance_to_consensus = 1 - build_profile(motifs).max(axis=0)
     return int(distance_to_consensus.sum() * len(motifs))
 
 
 def greedy_motif_search(
     Dna: list[str], k: int, t: int, with_pseudocounts: bool = False
-) -> list[str]:
-    best_motifs = [dna[:k] for dna in Dna]
+) -> Motifs:
+    # initialize with first kmer for each dna strand
+    best_motifs = Motifs([dna[:k] for dna in Dna])
+
     for i in range(len(Dna[0]) - k + 1):
         motif1 = Dna[0][i : i + k]
-        motifs = [motif1]
+        motifs = Motifs([motif1])
         for j in range(1, t):
-            profile = build_profile(motifs, with_pseudocounts)
-            motifs.append(most_probable_kmer_from_profile(Dna[j], k, profile))
-
-        if score(motifs) < score(best_motifs):
+            motifs.append(
+                most_probable_kmer_from_profile(
+                    Dna[j], k, motifs.profile(with_pseudocounts)
+                )
+            )
+        if motifs.score < best_motifs.score:
             best_motifs = deepcopy(motifs)
+    return best_motifs
+
+
+def motifs_from_profile(profile: np.ndarray, Dna: list[str]) -> Motifs:
+    k = profile.shape[1]
+    return Motifs([most_probable_kmer_from_profile(dna, k, profile) for dna in Dna])
+
+
+def randomized_motif_search(k: int, t: int, Dna: list[str]) -> Motifs:
+    # random initialization
+    starting_indices = [random.randint(0, len(Dna[i]) - k) for i in range(t)]
+    motifs = Motifs([Dna[i][j : j + k] for i, j in enumerate(starting_indices)])
+    best_motifs = deepcopy(motifs)
+
+    while True:
+        motifs = motifs_from_profile(motifs.profile(with_pseudocounts=True), Dna)
+        if motifs.score < best_motifs.score:
+            best_motifs = deepcopy(motifs)
+        else:
+            return best_motifs
+
+
+def run_multiple_randomized_motif_search(
+    k: int, t: int, Dna: list[str], n: int = 1000
+) -> Motifs:
+    best_score = 1e9
+    for _ in range(n):
+        motifs = randomized_motif_search(k, t, Dna)
+        if motifs.score < best_score:
+            best_motifs = deepcopy(motifs)
+            best_score = motifs.score
+
     return best_motifs
