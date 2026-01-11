@@ -2,9 +2,6 @@ from pathlib import Path
 from typing import Any
 
 
-CONVERSION = {"s": str, "i": int, "f": float, "b": bool}
-
-
 def read_inputs(
     filepath: Path | str, schema: list[tuple[str, type]], last_as_a_list: bool = False
 ) -> dict[str, Any]:

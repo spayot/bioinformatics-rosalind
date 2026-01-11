@@ -1,14 +1,17 @@
 import sys
-from bio.newspaper import Kmer, genome_path_to_string
+from bio.newspaper import Kmer, overlap_graph
 from bio.utils import read_inputs, print_output
 
 
 def main() -> None:
-    schema = [("genome_path", Kmer)]
+    schema = [("patterns", Kmer)]
     args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
 
     # run algorithm
-    print_output(genome_path_to_string(**args))
+    og = overlap_graph(**args)
+
+    output = [f"{p1} -> {p2}" for (p1, p2) in og]
+    print_output(output)
 
 
 if __name__ == "__main__":
