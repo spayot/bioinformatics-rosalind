@@ -1,3 +1,9 @@
+"""
+Rosalind ID: ba2h
+Title: Implement DistanceBetweenPatternAndStrings
+URL: https://rosalind.info/problems/ba2h/
+"""
+
 import sys
 from bio.motifs import total_distance
 from bio.utils import read_inputs
