@@ -4,8 +4,8 @@ from bio.utils import read_inputs
 
 
 def main() -> None:
-    schema = [("k", int), ("t", int), ("Dna", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("k", int), ("t", int), ("Dna", list[str])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     print(*greedy_motif_search(**args))

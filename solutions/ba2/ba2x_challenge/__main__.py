@@ -1,11 +1,12 @@
+import sys
 from bio.motifs import run_multiple_times, randomized_motif_search
 from bio.utils import read_inputs
 
 
 def main() -> None:
     """randomized motif search"""
-    schema = [("Dna", str)]
-    args = read_inputs(schema, True)
+    schema = [("Dna", list[str])]
+    args = read_inputs(sys.argv[1], schema)
     # print(args)
     # run algorithm
     best_motifs = run_multiple_times(

@@ -10,7 +10,7 @@ def parse_string(s: str) -> Any:
 
 def main() -> None:
     schema = [("s1", str), ("s2", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     print(hamming_distance(**args))
 

@@ -6,7 +6,7 @@ schema = [("pattern", str)]
 
 
 def main() -> None:
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     print(pattern_to_number(**args))

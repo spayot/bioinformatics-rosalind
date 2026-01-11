@@ -1,11 +1,12 @@
 import sys
-from bio.newspaper import Kmer, overlap_graph
+from bio.core import Kmer
+from bio.newspaper import overlap_graph
 from bio.utils import read_inputs, print_output
 
 
 def main() -> None:
-    schema = [("patterns", Kmer)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("patterns", list[Kmer])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     og = overlap_graph(**args)

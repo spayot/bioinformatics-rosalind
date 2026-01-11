@@ -12,7 +12,7 @@ def parse_string(s: str) -> Any:
 
 def main() -> None:
     schema = [("genome", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     sk = skew(**args)

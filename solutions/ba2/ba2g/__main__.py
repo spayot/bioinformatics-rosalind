@@ -5,8 +5,8 @@ from bio.utils import read_inputs
 
 def main() -> None:
     """randomized motif search"""
-    schema = [("k", int), ("t", int), ("N", int), ("Dna", str)]
-    args = read_inputs(sys.argv[1], schema, True)
+    schema = [("k", int), ("t", int), ("N", int), ("Dna", list[str])]
+    args = read_inputs(sys.argv[1], schema)
 
     # run algorithm
     best_motifs = run_multiple_times(algorithm=GibbsSampler, n=20, **args)

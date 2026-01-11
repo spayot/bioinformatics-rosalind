@@ -6,8 +6,8 @@ import numpy as np
 
 def main() -> None:
     """find kmer with highest probability within a string given a profile"""
-    schema = [("text", str), ("k", int), ("profile", float)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("text", str), ("k", int), ("profile", list[float])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     args["profile"] = np.array(args["profile"]).reshape(4, -1)
 

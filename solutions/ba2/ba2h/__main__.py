@@ -11,8 +11,8 @@ from bio.utils import read_inputs
 
 def main() -> None:
     """Implement DistanceBetweenPatternAndStrings"""
-    schema = [("pattern", str), ("Dna", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("pattern", str), ("Dna", list[str])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     print(total_distance(**args))

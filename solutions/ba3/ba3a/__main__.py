@@ -5,7 +5,7 @@ from bio.utils import print_output, read_inputs
 
 def main() -> None:
     schema = [("k", int), ("text", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     output = composition(**args)
     # run algorithm

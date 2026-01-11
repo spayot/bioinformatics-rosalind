@@ -6,7 +6,7 @@ from bio.utils import read_inputs
 
 def main() -> None:
     schema = [("text", str), ("pattern", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     print(pattern_count(**args))
 

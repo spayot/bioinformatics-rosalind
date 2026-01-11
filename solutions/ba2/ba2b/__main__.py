@@ -5,8 +5,8 @@ from bio.utils import read_inputs
 
 def main() -> None:
     """find median string of length k over a list of DNA sequences"""
-    schema = [("k", int), ("Dna", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("k", int), ("Dna", list[str])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     print(median_string(**args))

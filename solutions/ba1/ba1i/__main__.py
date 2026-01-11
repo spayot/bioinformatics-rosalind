@@ -5,7 +5,7 @@ from bio.strings import most_frequent_approx_kmers
 
 def main() -> None:
     schema = [("text", str), ("k", int), ("d", int)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
 

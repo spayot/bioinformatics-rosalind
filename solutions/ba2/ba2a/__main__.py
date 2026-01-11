@@ -4,8 +4,8 @@ from bio.motifs import motif_enumeration
 
 
 def main() -> None:
-    schema = [("k", int), ("d", int), ("Dna", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("k", int), ("d", int), ("Dna", list[str])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     print(*motif_enumeration(**args))

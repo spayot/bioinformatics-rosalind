@@ -5,8 +5,8 @@ from bio.utils import read_inputs
 
 def main() -> None:
     """greedy motif search with pseudocounts (adjusting the profile probability matrix by adding 1 to each count)"""
-    schema = [("k", int), ("t", int), ("Dna", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=True)
+    schema = [("k", int), ("t", int), ("Dna", list[str])]
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     # run algorithm
     # print(*greedy_motif_search(with_pseudocounts=True, **args))

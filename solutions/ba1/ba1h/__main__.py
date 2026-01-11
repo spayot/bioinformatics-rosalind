@@ -6,7 +6,7 @@ from bio.utils import read_inputs
 def main() -> None:
     # parse inputs
     schema = [("pattern", str), ("text", str), ("d", int)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
     # run algorithm
     print(*find_all_approx_occurences(**args))
 

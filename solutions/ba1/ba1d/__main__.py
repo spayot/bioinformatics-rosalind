@@ -6,7 +6,7 @@ from bio.strings import find_all_occurences
 
 def main() -> None:
     schema = [("pattern", str), ("text", str)]
-    args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
+    args = read_inputs(filepath=sys.argv[1], schema=schema)
 
     print(*(str(i) for i in find_all_occurences(**args)))
 
