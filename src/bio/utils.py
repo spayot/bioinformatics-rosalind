@@ -22,3 +22,12 @@ def read_inputs(
         converted_values[field_name] = [field_type(v) for v in args[idx:]]
 
     return converted_values
+
+
+def print_output(output: Any) -> None:
+    """default prints using \n separator for lists or sets"""
+    if isinstance(output, list) | isinstance(output, set):
+        print(*output, sep="\n")
+
+    else:
+        print(output)

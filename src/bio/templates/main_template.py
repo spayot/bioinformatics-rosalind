@@ -1,5 +1,5 @@
 import sys
-from bio.utils import read_inputs
+from bio.utils import read_inputs, print_output
 
 
 def main() -> None:
@@ -7,7 +7,7 @@ def main() -> None:
     args = read_inputs(filepath=sys.argv[1], schema=schema, last_as_a_list=False)
 
     # run algorithm
-    print(args)
+    print_output(args)
 
 
 if __name__ == "__main__":
